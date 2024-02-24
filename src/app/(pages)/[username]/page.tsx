@@ -26,7 +26,7 @@ const Page = ({ params }: { params: { username: string } }) => {
       setLoading(false)
     };
     FetchData();
-  }, []);
+  }, [setIsUser,setUser,params.username]);
 
   return (
     <div className="w-screen h-screen overflow-hidden">
