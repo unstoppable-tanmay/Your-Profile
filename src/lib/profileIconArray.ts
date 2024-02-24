@@ -1,4 +1,4 @@
-const ProfileIcons = {
+export const ProfileIcons = {
   batgirl: "/images/profile/batgirl.png",
   batman: "/images/profile/batman.png",
   captain: "/images/profile/captain.png",

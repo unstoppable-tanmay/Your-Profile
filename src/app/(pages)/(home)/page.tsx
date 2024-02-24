@@ -1,7 +1,7 @@
 import React from "react";
 import Home from "./Home";
 
-const Page = () => {
+const Page = async () => {
   return (
     <main className={`flex min-h-screen flex-col items-center justify-center`}>
       <Home/>
@@ -10,6 +10,3 @@ const Page = () => {
 };
 
 export default Page;
-
-// IRRI.Block53
-// Test@123

@@ -2,6 +2,7 @@ import { FaGithub, FaGoogle, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { AiFillInstagram } from "react-icons/ai";
 import { RiWhatsappFill } from "react-icons/ri";
 import { IconType } from "react-icons";
+import validator from "validator";
 
 export const techArray: string[] = [
   "React",
@@ -105,11 +106,9 @@ export function CheckSocialProfiles(input: string): string {
     input.includes("@")
   )
     return "google";
-  else return "";
+  else return "link";
 }
 
 export function isLinkValid(link: string): boolean {
-  const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
-
-  return urlPattern.test(link);
+  return validator.isURL(link, { require_protocol: true });
 }

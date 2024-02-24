@@ -37,6 +37,9 @@ html {
         -ms-overflow-style: none;  /* IE and Edge */
         scrollbar-width: none;  /* Firefox */
   }
+    .scrollbar-dark::-webkit-scrollbar-thumb {
+        @apply bg-def_blue_gray_dark
+  }
   
     .scrollbar-thumb-dark::-webkit-scrollbar-thumb {
         @apply bg-def_blue_gray_light;

@@ -1,7 +1,7 @@
 import Head from "next/head";
 import "./global.css";
 export const metadata = {
-  title: "CodeSnip🚀",
+  title: "Your Portfolio 📄",
   description: "A Social Platform For Developers & Coders",
 };
 
@@ -12,7 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-        <body>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

@@ -3,7 +3,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { IoClose, IoEye, IoEyeOff, IoGitBranchOutline } from "react-icons/io5";
 import Chips from "../SmallComponents/Chips.comp";
-import { FaGithub, FaGoogle, FaLink, FaLinkedin, FaTwitter } from "react-icons/fa";
+import {
+  FaGithub,
+  FaGoogle,
+  FaLink,
+  FaLinkedin,
+  FaTwitter,
+} from "react-icons/fa";
 import { AiFillInstagram } from "react-icons/ai";
 import {
   CheckSocialProfiles,
@@ -18,39 +24,44 @@ import useUserStore from "@/store/user";
 import { ProfileImageType, getImage } from "@/lib/profileIconArray";
 import validator from "validator";
 
-const CreateProfile = ({
+const UpdateProfile = ({
   setClose,
 }: {
   setClose: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const [email, setEmail] = useState("");
-  const [userName, setUserName] = useState("");
+  const { user, setIsUser, setUser, isUser } = useUserStore();
+
+  const [email, setEmail] = useState(user.email);
+  const [userName, setUserName] = useState(user.username);
   const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [designation, setDesignation] = useState("");
-  const [about, setAbout] = useState("");
+  const [displayName, setDisplayName] = useState(user.name);
+  const [designation, setDesignation] = useState(user.designation);
+  const [about, setAbout] = useState(user.about);
 
-  const [profileImage, setProfileImage] =
-    useState<ProfileImageType>("deadpool");
-  const [coverImage, setCoverImage] = useState<File>();
+  const [profileImage, setProfileImage] = useState<ProfileImageType>(
+    user.profileImage as ProfileImageType
+  );
+  const [coverImage, setCoverImage] = useState<string>(user.coverImage);
 
-  const [talksAbout, setTalksAbout] = useState<string[]>([]);
-  const [talksAboutSearch, setTalksAboutSearch] = useState<string>();
+  const [talksAbout, setTalksAbout] = useState<string[]>([...user.talksAbout]);
+  const [talksAboutSearch, setTalksAboutSearch] = useState<string>("");
 
-  const [socialProfiles, setSocialProfiles] = useState<string[]>([]);
-  const [socialProfilesSearch, setSocialProfilesSearch] = useState<string>();
+  const [socialProfiles, setSocialProfiles] = useState<string[]>([
+    ...user.socialProfiles,
+  ]); 
+  const [socialProfilesSearch, setSocialProfilesSearch] = useState<string>("");
 
-  const [projects, setProjects] = useState<projectType[]>([]);
+  const [projects, setProjects] = useState<projectType[]>([
+    ...user.projects.map((e) => JSON.parse(e)),
+  ]);
 
   const [openProfileSelect, setOpenProfileSelect] = useState(false);
   const [openProjectDialog, setOpenProjectDialog] = useState(false);
 
-  const { user, setIsUser, setUser, isUser } = useUserStore();
-
   const [passwordShow, setPasswordShow] = useState(false);
   const [availableUserName, setAvailableUserName] = useState(true);
 
-  const toBase64 = (file: File) =>
+  const toBase64 = (file: File): any =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -58,7 +69,7 @@ const CreateProfile = ({
       reader.onerror = reject;
     });
 
-  const CreateProfile = async () => {
+  const updateProfile = async () => {
     if (!email) return alert("Enter Email");
     if (!userName) return alert("Enter User Name");
     if (!password) return alert("Enter Password");
@@ -66,47 +77,50 @@ const CreateProfile = ({
     if (!designation) return alert("Enter Designation");
     if (!about) return alert("Enter About");
     if (!profileImage) return alert("Enter Profile Image");
-    if (!socialProfiles) return alert("Enter Social Profile");
 
     if (!projects) alert("You May Add Projects");
+    if (!availableUserName) return alert("The User Name Not Available");
 
     try {
-      const imgData = coverImage ? await toBase64(coverImage) : "";
+      // const imgData = coverImage ? await toBase64(coverImage) : "";
 
-      const loggedInUserResponse = await fetch(`/api/register`, {
+      const loggedInUserResponse = await fetch(`/api/update`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email,
-          password,
           username: userName,
           name: displayName,
+          password,
           designation,
           profileImage,
-          coverImage: imgData,
+          coverImage,
           about,
-          talksAbout: talksAbout ? talksAbout : [],
-          socialProfiles: socialProfiles ? socialProfiles : [],
-          projects: projects
-            ? projects.map((project) => JSON.stringify(project))
-            : [],
+          talksAbout: talksAbout,
+          socialProfiles: socialProfiles,
+          projects: projects.map((project) => JSON.stringify(project)),
         }),
         credentials: "include",
       });
 
       const loggedInUser = await loggedInUserResponse.json();
 
-      setUser(loggedInUser);
-      setIsUser(true);
-      setClose(false);
+      if (!loggedInUser.error) {
+        setUser(loggedInUser);
+        setIsUser(true);
+        setClose(false);
+      } else {
+        setClose(false);
+        console.log(loggedInUser.error);
+        alert(loggedInUser.error);
+      }
     } catch (error) {
       console.log(error);
     }
   };
 
-  
   useEffect(() => {
     const delay = 500;
     let timeoutId: any;
@@ -160,21 +174,17 @@ const CreateProfile = ({
               id="coverImage"
               className="hidden"
               accept="image/*"
-              onChange={(e) => {
+              onChange={async (e) => {
                 if (e.target.files && e.target.files[0]) {
-                  if (e.target.files[0].size < 524288)
-                    setCoverImage(e.target.files[0]);
-                  else alert("file size is larger than 512kb");
+                  if (e.target.files[0].size < 524288) {
+                    const imgData = await toBase64(e.target.files[0]);
+                    setCoverImage(imgData);
+                  } else alert("file size is larger than 512kb");
                 }
               }}
             />
             {coverImage && (
-              <Image
-                fill
-                src={URL.createObjectURL(coverImage)}
-                alt=""
-                className="object-cover"
-              />
+              <Image fill src={coverImage} alt="" className="object-cover" />
             )}
           </label>
         </div>
@@ -205,13 +215,7 @@ const CreateProfile = ({
                 setProfileImage={setProfileImage}
               />
             </Dialog>
-            <Image
-              alt=""
-              fill
-              src={
-                getImage(profileImage)
-              }
-            />
+            <Image alt="" fill src={getImage(profileImage)} />
           </label>
           <input
             type="text"
@@ -229,7 +233,7 @@ const CreateProfile = ({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className={`rounded-[5px] bg-def_blue_gray_dark px-4 py-2 flex-1 font-FiraMono outline-none text-xs duration-200 ${
-            validator.isEmail(email)
+            validator.isEmail(email!)
               ? "border-0"
               : email
               ? "border-[1px] border-def_rose"
@@ -239,7 +243,7 @@ const CreateProfile = ({
 
         {/* User Name & Password */}
         <div className="profileDetails w-full flex flex-wrap gap-3 text-xs items-center justify-between">
-        <div
+          <div
             className={`flex items-center justify-center pr-3 flex-1 bg-def_blue_gray_dark rounded-[5px] relative ${
               availableUserName
                 ? "border-0"
@@ -265,7 +269,7 @@ const CreateProfile = ({
           </div>
           <div
             className={`flex items-center justify-between pr-3 flex-1 bg-def_blue_gray_dark rounded-[5px]  ${
-              validator.isStrongPassword(password)
+              validator.isStrongPassword(password!)
                 ? "border-0"
                 : password
                 ? "border-[1px] border-def_rose"
@@ -334,9 +338,14 @@ const CreateProfile = ({
                         talksAboutSearch?.slice(1),
                     ]);
                     setTalksAboutSearch("");
-                  } else if (e.key == "Backspace" && talksAboutSearch == "")
-                    setTalksAbout((e) => e.slice(0, e.length - 1));
-                  else if (e.key == "Tab" && talksAboutSearch) {
+                  } else if (
+                    e.key == "Backspace" &&
+                    talksAboutSearch == "" &&
+                    talksAbout.length >= 1
+                  ) {
+                    console.log(talksAbout.slice(0, talksAbout.length - 1))
+                    setTalksAbout(talksAbout.slice(0, talksAbout.length - 1));
+                  } else if (e.key == "Tab" && talksAboutSearch) {
                     e.preventDefault();
                     setTalksAbout((e) => [
                       ...e,
@@ -370,15 +379,16 @@ const CreateProfile = ({
             className=" w-full rounded-[7px] bg-def_blue_gray_dark resize-none p-2 outline-none text-xs relative flex gap-2 flex-wrap overflow-y-scroll cursor-text"
           >
             <div className="Profiles flex flex-wrap gap-2 text-base text-white/50 ">
-              {socialProfiles.map((profile, ind) => {
-                let icon = CheckSocialProfiles(profile);
-                if (icon == "github") return <FaGithub />;
-                else if (icon == "linkedin") return <FaLinkedin />;
-                else if (icon == "twitter") return <FaTwitter />;
-                else if (icon == "instagram") return <AiFillInstagram />;
-                else if (icon == "google") return <FaGoogle />;
-                else return <FaLink />
-              })}
+              {socialProfiles &&
+                socialProfiles.map((profile, ind) => {
+                  let icon = CheckSocialProfiles(profile);
+                  if (icon == "github") return <FaGithub />;
+                  else if (icon == "linkedin") return <FaLinkedin />;
+                  else if (icon == "twitter") return <FaTwitter />;
+                  else if (icon == "instagram") return <AiFillInstagram />;
+                  else if (icon == "google") return <FaGoogle />;
+                  else return <FaLink />;
+                })}
             </div>
             <input
               type="text"
@@ -417,15 +427,15 @@ const CreateProfile = ({
 
         {/* Submit */}
         <button
-          onClick={CreateProfile}
+          onClick={updateProfile}
           className="px-2 font-FiraMono py-1 rounded-[5px] relative bg-def_blue_gray_dark text-white text-sm hover:shadow-2xl hover:shadow-white/[0.1] transition duration-200 border border-slate-600 group"
         >
           <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-2xl bg-gradient-to-r from-transparent via-teal-500 to-transparent group-hover:w-full duration-300" />
-          <span className="relative z-20">Create</span>
+          <span className="relative z-20">Update</span>
         </button>
       </div>
     </div>
   );
 };
 
-export default CreateProfile;
+export default UpdateProfile;

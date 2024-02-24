@@ -2,32 +2,45 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import React, { Dispatch, ReactNode, SetStateAction, useEffect } from "react";
+import ReactDOM from "react-dom";
 
 const Dialog = ({
   children,
   isOpen,
   setOpen,
+  closeOnBlurArea = true,
+  noClose=false
 }: {
   children: ReactNode;
   isOpen: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  closeOnBlurArea?: boolean;
+  noClose?:boolean
 }) => {
-  return (
+  if (typeof document === "undefined") {
+    // Return null during server-side rendering
+    return null;
+  }
+  return ReactDOM.createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="dialog-overlay w-full h-full flex items-center justify-center fixed z-[200]"
+          className="dialog-overlay w-full h-full flex items-center justify-center fixed top-0 left-0 z-[200] bg-transparent text-white"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onWheel={(e) => e.stopPropagation()}
         >
           <motion.div
-            initial={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="blurLayer w-full h-full absolute backdrop-blur-md"
-            onClick={(e) => setOpen(false)}
+            onClick={(e) => {
+              if (closeOnBlurArea) {
+                !noClose&& setOpen(false);
+                e.stopPropagation();
+              }
+            }}
           ></motion.div>
           <motion.div
             className="dialog-content"
@@ -39,7 +52,8 @@ const Dialog = ({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
