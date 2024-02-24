@@ -29,6 +29,7 @@ import { CheckSocialProfiles } from "@/lib/createProfileHelper";
 import Dialog from "./Dialog";
 import AddProject, { projectType } from "./AddProject.comp";
 import html2canvas from "html2canvas";
+import Link from "next/link";
 
 const Profile = ({
   setClose,
@@ -164,12 +165,42 @@ const Profile = ({
             <div className="Profiles flex flex-wrap gap-4 text-xl text-white/50 ">
               {user.socialProfiles.map((profile, ind) => {
                 let icon = CheckSocialProfiles(profile);
-                if (icon == "github") return <FaGithub />;
-                else if (icon == "linkedin") return <FaLinkedin />;
-                else if (icon == "twitter") return <FaTwitter />;
-                else if (icon == "instagram") return <AiFillInstagram />;
-                else if (icon == "google") return <FaGoogle />;
-                else return <FaLink />;
+                if (icon == "github")
+                  return (
+                    <Link target="_blank" href={profile}>
+                      <FaGithub />
+                    </Link>
+                  );
+                else if (icon == "linkedin")
+                  return (
+                    <Link target="_blank" href={profile}>
+                      <FaLinkedin />
+                    </Link>
+                  );
+                else if (icon == "twitter")
+                  return (
+                    <Link target="_blank" href={profile}>
+                      <FaTwitter />
+                    </Link>
+                  );
+                else if (icon == "instagram")
+                  return (
+                    <Link target="_blank" href={profile}>
+                      <AiFillInstagram />
+                    </Link>
+                  );
+                else if (icon == "google")
+                  return (
+                    <Link target="_blank" href={profile}>
+                      <FaGoogle />
+                    </Link>
+                  );
+                else
+                  return (
+                    <Link target="_blank" href={profile}>
+                      <FaLink />
+                    </Link>
+                  );
               })}
             </div>
           </div>

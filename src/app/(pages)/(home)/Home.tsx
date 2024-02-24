@@ -8,7 +8,8 @@ import UpdateProfile from "@/components/DialogComponent/Update.comp";
 import { LampContainer } from "@/components/ui/lamp";
 import useUserStore, { UserResponse } from "@/store/user";
 import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { useCookies } from "react-cookie";
 
 const Home = () => {
   const [profile, setProfile] = useState(false);
@@ -18,7 +19,26 @@ const Home = () => {
 
   const { user, setIsUser, setUser, isUser } = useUserStore();
 
-  useEffect(() => {
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+
+  const [loading, setLoading] = useState(true);
+
+  const logOut = () => {
+    removeCookie("token");
+    setUser({
+      name: "",
+      designation: "",
+      profileImage: "",
+      coverImage: "",
+      about: "",
+      talksAbout: [],
+      socialProfiles: [],
+      projects: [],
+    });
+    setIsUser(false);
+  };
+
+  useLayoutEffect(() => {
     const JWTLogin = async () => {
       const response = await fetch(`/api/`, {
         headers: {
@@ -31,6 +51,7 @@ const Home = () => {
         setUser(user);
         setIsUser(true);
       }
+      setLoading(false);
     };
 
     JWTLogin().catch((err) => console.log(err));
@@ -83,6 +104,13 @@ const Home = () => {
                 <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-2xl  bg-gradient-to-r from-transparent via-teal-500 to-transparent" />
                 <span className="relative z-20">Update Profile</span>
               </motion.button>
+              <motion.button
+                onClick={logOut}
+                className="px-8 py-2 rounded-full relative bg-slate-700 text-white text-sm hover:shadow-2xl hover:shadow-white/[0.1] transition duration-200 border border-slate-600"
+              >
+                <div className="absolute inset-x-0 h-px w-1/2 mx-auto -top-px shadow-2xl  bg-gradient-to-r from-transparent via-def_rose to-transparent" />
+                <span className="relative z-20 text-def_rose">Log Out</span>
+              </motion.button>
             </div>
           ) : (
             <div className="flex gap-4 text-white w-full items-center justify-center mt-10 flex-wrap">
@@ -113,6 +141,11 @@ const Home = () => {
           </motion.div>
         </motion.div>
       </LampContainer>
+      {loading && (
+        <div className="text-lg font-FiraMono font-medium w-full h-full backdrop-blur-xl absolute flex items-center justify-center">
+          Loading
+        </div>
+      )}
     </div>
   );
 };

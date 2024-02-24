@@ -34,7 +34,7 @@ const Dialog = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="blurLayer w-full h-full absolute backdrop-blur-md"
+            className={`blurLayer w-full h-full absolute backdrop-blur-md ${!noClose && "pointer-events-none"}`}
             onClick={(e) => {
               if (closeOnBlurArea) {
                 !noClose&& setOpen(false);
