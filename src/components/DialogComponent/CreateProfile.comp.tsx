@@ -3,7 +3,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { IoClose, IoEye, IoEyeOff, IoGitBranchOutline } from "react-icons/io5";
 import Chips from "../SmallComponents/Chips.comp";
-import { FaGithub, FaGoogle, FaLink, FaLinkedin, FaTwitter } from "react-icons/fa";
+import {
+  FaGithub,
+  FaGoogle,
+  FaLink,
+  FaLinkedin,
+  FaTwitter,
+} from "react-icons/fa";
 import { AiFillInstagram } from "react-icons/ai";
 import {
   CheckSocialProfiles,
@@ -45,7 +51,8 @@ const CreateProfile = ({
   const [openProfileSelect, setOpenProfileSelect] = useState(false);
   const [openProjectDialog, setOpenProjectDialog] = useState(false);
 
-  const { user, setIsUser, setUser, isUser } = useUserStore();
+  const { user, setIsUser, setUser, isUser, loading, setLoading } =
+    useUserStore();
 
   const [passwordShow, setPasswordShow] = useState(false);
   const [availableUserName, setAvailableUserName] = useState(true);
@@ -59,12 +66,16 @@ const CreateProfile = ({
     });
 
   const CreateProfile = async () => {
+    setLoading(true);
+
     if (!email) return alert("Enter Email");
     if (!userName) return alert("Enter User Name");
     if (!password) return alert("Enter Password");
     if (!displayName) return alert("Enter Display Name");
     if (!designation) return alert("Enter Designation");
     if (!about) return alert("Enter About");
+    if (!validator.isLength(about, { max: 200 }))
+      return alert("About Length Should be low");
     if (!profileImage) return alert("Enter Profile Image");
     if (!socialProfiles) return alert("Enter Social Profile");
 
@@ -103,10 +114,11 @@ const CreateProfile = ({
       setClose(false);
     } catch (error) {
       console.log(error);
+    }finally{
+      setLoading(false)
     }
   };
 
-  
   useEffect(() => {
     const delay = 500;
     let timeoutId: any;
@@ -135,6 +147,7 @@ const CreateProfile = ({
 
   return (
     <div className="create_snippet_wrapper w-[550px] relative max-w-[85vw] py-4 pl-4 pr-2 md:py-5 md:pl-5 md:pr-2 bg-def_blue_gray_light rounded-[10px] shrink-0">
+
       {/* Close Button */}
       <div
         className="cross_btn absolute top-3 right-0 translate-x-[85%] hover:translate-x-[100%] duration-200 rounded-r-full bg-def_rose flex items-center justify-center px-1 md:px-2 py-1 cursor-pointer -z-10"
@@ -205,13 +218,7 @@ const CreateProfile = ({
                 setProfileImage={setProfileImage}
               />
             </Dialog>
-            <Image
-              alt=""
-              fill
-              src={
-                getImage(profileImage)
-              }
-            />
+            <Image alt="" fill src={getImage(profileImage)} />
           </label>
           <input
             type="text"
@@ -239,7 +246,7 @@ const CreateProfile = ({
 
         {/* User Name & Password */}
         <div className="profileDetails w-full flex flex-wrap gap-3 text-xs items-center justify-between">
-        <div
+          <div
             className={`flex items-center justify-center pr-3 flex-1 bg-def_blue_gray_dark rounded-[5px] relative ${
               availableUserName
                 ? "border-0"
@@ -301,7 +308,7 @@ const CreateProfile = ({
           placeholder="Hey What's Your Status ?"
           value={about}
           onChange={(e) => setAbout(e.target.value)}
-          className="text-xs bg-def_blue_gray_dark rounded-[7px] outline-none resize-none p-2 text-def_white/40 font-FiraMono min-h-[60px] h-[70px]"
+          className="text-xs bg-def_blue_gray_dark rounded-[7px] outline-none resize-none p-2 text-def_white/40 font-FiraMono min-h-[60px] h-[70px] px-4"
         ></textarea>
 
         {/* Talks About */}
@@ -311,16 +318,17 @@ const CreateProfile = ({
           </div>
           <label
             htmlFor="talksAbout"
-            className="addTalksAbout w-full h-[60px] rounded-[7px] bg-def_blue_gray_dark resize-none p-2 outline-none text-xs relative flex gap-2 flex-wrap overflow-y-scroll cursor-text no-scrollbar"
+            className="addTalksAbout w-full h-[60px] rounded-[7px] bg-def_blue_gray_dark resize-none p-2 px-4 outline-none text-xs relative flex gap-2 flex-wrap overflow-y-scroll cursor-text no-scrollbar"
           >
             {talksAbout.map((ele, ind) => {
-              return <Chips size="xs" bg="bg-white" text={ele} key={ind} />;
+              return <Chips size="sm" bg="bg-white" text={ele} key={ind} />;
             })}
-            <div className="inputWrapper relative w-full">
-              <input
+            <div className="inputWrapper relative mt-0.5">
+              <textarea
                 id="talksAbout"
+                rows={1}
                 placeholder="click enter to add"
-                className="bg-transparent outline-none flex-1 self-start font-FiraMono capitalize"
+                className="bg-transparent outline-none self-start font-FiraMono capitalize resize-none min-w-[200px] no-scrollbar"
                 value={talksAboutSearch}
                 onChange={(e) => {
                   setTalksAboutSearch(e.target.value);
@@ -345,7 +353,7 @@ const CreateProfile = ({
                     setTalksAboutSearch("");
                   }
                 }}
-              ></input>
+              ></textarea>
               <div className="shadowedWord absolute top-0 left-0 font-FiraMono text-white/30 max-w-full">
                 {talksAboutSearch}
                 {talksAboutSearch &&
@@ -377,29 +385,30 @@ const CreateProfile = ({
                 else if (icon == "twitter") return <FaTwitter />;
                 else if (icon == "instagram") return <AiFillInstagram />;
                 else if (icon == "google") return <FaGoogle />;
-                else return <FaLink />
+                else return <FaLink />;
               })}
             </div>
-            <input
-              type="text"
+            <textarea
               name=""
+              rows={1}
               id="socialProfiles"
               placeholder="Enter to add"
               value={socialProfilesSearch}
               onChange={(e) => setSocialProfilesSearch(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key == "Enter") {
-                  if (
-                    validator.isURL(socialProfilesSearch!)
-                  ) {
+                  if (validator.isURL(socialProfilesSearch!)) {
                     setSocialProfiles((e) => [...e, socialProfilesSearch!]);
                     setSocialProfilesSearch("");
-                  } else alert("not a valid link");
+                  } else {
+                    e.preventDefault();
+                    alert("not a valid link");
+                  }
                 } else if (e.key == "Backspace" && socialProfilesSearch == "") {
                   setSocialProfiles((e) => e.slice(0, e.length - 1));
                 }
               }}
-              className="bg-transparent outline-none flex-1 self-start w-full font-FiraMono"
+              className="bg-transparent outline-none self-start min-w-[200px] font-FiraMono resize-none  no-scrollbar"
             />
           </label>
         </div>
@@ -410,7 +419,11 @@ const CreateProfile = ({
           onClick={(e) => setOpenProjectDialog(true)}
         >
           <Dialog isOpen={openProjectDialog} setOpen={setOpenProjectDialog}>
-            <AddProject projects={projects} setProjects={setProjects} setClose={setOpenProjectDialog} />
+            <AddProject
+              projects={projects}
+              setProjects={setProjects}
+              setClose={setOpenProjectDialog}
+            />
           </Dialog>
           Add Projects <IoGitBranchOutline className="text-sm" />
         </div>

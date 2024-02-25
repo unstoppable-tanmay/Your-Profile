@@ -15,9 +15,12 @@ const Login = ({
 
   const [passwordShow, setPasswordShow] = useState(false);
 
-  const { user, setIsUser, setUser, isUser } = useUserStore();
+  const { user, setIsUser, setUser, isUser, loading, setLoading } =
+    useUserStore();
 
   const Login = async () => {
+    setLoading(true);
+
     if (!userName) return alert("Enter User Name");
     if (!password) return alert("Enter Password");
 
@@ -40,12 +43,13 @@ const Login = ({
         setUser(loggedInUser);
         setIsUser(true);
         setClose(false);
-      }else{
-        setClose(false);
-        alert(loggedInUser.error)
+      } else {
+        alert(loggedInUser.error);
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -70,16 +74,12 @@ const Login = ({
         onChange={(e) => setUserName(e.target.value)}
         className="rounded-[5px] bg-def_blue_gray_dark px-4 py-2 flex-1 font-FiraMono outline-none text-xs"
       />
-      <div
-        className={`flex items-center justify-between pr-3 flex-1 bg-def_blue_gray_dark rounded-[5px]  ${
-          validator.isStrongPassword(password)
-            ? "border-0"
-            : password
-            ? "border-[1px] border-def_rose"
-            : ""
-        }`}
+      <label
+        htmlFor="passwordLogin"
+        className={`flex items-center justify-between pr-3 flex-1 bg-def_blue_gray_dark rounded-[5px]`}
       >
         <input
+          id="passwordLogin"
           type={passwordShow ? "text" : "password"}
           placeholder="Password"
           value={password}
@@ -97,7 +97,7 @@ const Login = ({
             onClick={(e) => setPasswordShow(!passwordShow)}
           />
         )}
-      </div>
+      </label>
 
       {/* Submit */}
       <button

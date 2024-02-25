@@ -9,13 +9,13 @@ const Dialog = ({
   isOpen,
   setOpen,
   closeOnBlurArea = true,
-  noClose=false
+  noClose = false,
 }: {
   children: ReactNode;
   isOpen: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
+  setOpen: Dispatch<SetStateAction<boolean>> | null;
   closeOnBlurArea?: boolean;
-  noClose?:boolean
+  noClose?: boolean;
 }) => {
   if (typeof document === "undefined") {
     // Return null during server-side rendering
@@ -34,10 +34,12 @@ const Dialog = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className={`blurLayer w-full h-full absolute backdrop-blur-md ${!noClose && "pointer-events-none"}`}
+            className={`blurLayer w-full h-full absolute backdrop-blur-md ${
+              !noClose && "pointer-events-none"
+            }`}
             onClick={(e) => {
               if (closeOnBlurArea) {
-                !noClose&& setOpen(false);
+                !noClose && setOpen!(false);
                 e.stopPropagation();
               }
             }}

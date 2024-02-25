@@ -29,7 +29,8 @@ const UpdateProfile = ({
 }: {
   setClose: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const { user, setIsUser, setUser, isUser } = useUserStore();
+  const { user, setIsUser, setUser, isUser, loading, setLoading } =
+    useUserStore();
 
   const [email, setEmail] = useState(user.email);
   const [userName, setUserName] = useState(user.username);
@@ -48,7 +49,7 @@ const UpdateProfile = ({
 
   const [socialProfiles, setSocialProfiles] = useState<string[]>([
     ...user.socialProfiles,
-  ]); 
+  ]);
   const [socialProfilesSearch, setSocialProfilesSearch] = useState<string>("");
 
   const [projects, setProjects] = useState<projectType[]>([
@@ -70,6 +71,7 @@ const UpdateProfile = ({
     });
 
   const updateProfile = async () => {
+    setLoading(true);
     if (!email) return alert("Enter Email");
     if (!userName) return alert("Enter User Name");
     if (!password) return alert("Enter Password");
@@ -118,6 +120,8 @@ const UpdateProfile = ({
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,14 +130,16 @@ const UpdateProfile = ({
     let timeoutId: any;
 
     const checkUsernameAvailability = async () => {
-      try {
-        const response = await fetch(`/api/check/${userName}`, {
-          credentials: "include",
-        });
-        const data = await response.json();
-        setAvailableUserName(data);
-      } catch (error) {
-        console.error("Error checking username availability:", error);
+      if (userName) {
+        try {
+          const response = await fetch(`/api/check/${userName}`, {
+            credentials: "include",
+          });
+          const data = await response.json();
+          setAvailableUserName(data);
+        } catch (error) {
+          console.error("Error checking username availability:", error);
+        }
       }
     };
 
@@ -343,7 +349,7 @@ const UpdateProfile = ({
                     talksAboutSearch == "" &&
                     talksAbout.length >= 1
                   ) {
-                    console.log(talksAbout.slice(0, talksAbout.length - 1))
+                    console.log(talksAbout.slice(0, talksAbout.length - 1));
                     setTalksAbout(talksAbout.slice(0, talksAbout.length - 1));
                   } else if (e.key == "Tab" && talksAboutSearch) {
                     e.preventDefault();
@@ -399,9 +405,7 @@ const UpdateProfile = ({
               onChange={(e) => setSocialProfilesSearch(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key == "Enter") {
-                  if (
-                    validator.isURL(socialProfilesSearch!)
-                  ) {
+                  if (validator.isURL(socialProfilesSearch!)) {
                     setSocialProfiles((e) => [...e, socialProfilesSearch!]);
                     setSocialProfilesSearch("");
                   } else alert("not a valid link");
@@ -420,7 +424,11 @@ const UpdateProfile = ({
           onClick={(e) => setOpenProjectDialog(true)}
         >
           <Dialog isOpen={openProjectDialog} setOpen={setOpenProjectDialog}>
-            <AddProject projects={projects} setProjects={setProjects} setClose={setOpenProjectDialog} />
+            <AddProject
+              projects={projects}
+              setProjects={setProjects}
+              setClose={setOpenProjectDialog}
+            />
           </Dialog>
           Add Projects <IoGitBranchOutline className="text-sm" />
         </div>

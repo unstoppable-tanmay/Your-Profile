@@ -21,6 +21,8 @@ type User = {
   setUser: (user: UserResponse) => void;
   isUser: boolean;
   setIsUser: (isUser: boolean) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 };
 
 const useUserStore = create<User>((set) => ({
@@ -37,6 +39,8 @@ const useUserStore = create<User>((set) => ({
   setUser: (user: UserResponse) => set(() => ({ user })),
   isUser: false,
   setIsUser: (isUser) => set(() => ({ isUser })),
+  loading: false,
+  setLoading: (loading) => set(()=> ({loading}))
 }));
 
 export default useUserStore;

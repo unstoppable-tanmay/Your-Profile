@@ -47,22 +47,20 @@ const Profile = ({
   );
 
   const handleDownloadImage = async () => {
-    const element = componentRef.current;
-    const canvas = await html2canvas(element, { imageTimeout: 0 });
-
-    const data = canvas.toDataURL("image/jpg");
-    const link = document.createElement("a");
-
-    if (typeof link.download === "string") {
-      link.href = data;
-      link.download = "image.jpg";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      window.open(data);
-    }
+    // await captureWebsite.file(`/${user.username}`, `${user.username}.png`);
+    // const element = componentRef.current;
+    // const canvas = await html2canvas(element, { imageTimeout: 0 });
+    // const data = canvas.toDataURL("image/jpg");
+    // const link = document.createElement("a");
+    // if (typeof link.download === "string") {
+    //   link.href = data;
+    //   link.download = "image.jpg";
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   document.body.removeChild(link);
+    // } else {
+    //   window.open(data);
+    // }
   };
 
   return (
@@ -83,14 +81,14 @@ const Profile = ({
       )}
 
       {/* Download Button */}
-      {!noClose && (
+      {/* {!noClose && (
         <div
           onClick={handleDownloadImage}
           className="cross_btn absolute bottom-3 right-0 translate-x-[85%] hover:translate-x-[100%] duration-200 rounded-r-full bg-def_white/20 flex items-center justify-center px-1 md:px-2 py-1 cursor-pointer -z-10"
         >
           <MdFileDownload />
         </div>
-      )}
+      )} */}
 
       {/* Link Button */}
       {!noClose && (
@@ -99,9 +97,9 @@ const Profile = ({
             navigator.clipboard.writeText(
               `${window.location.origin}/${user.username}`
             );
-            alert("link copied");
+            window.open(`${window.location.origin}/${user.username}`, "_blank");
           }}
-          className="cross_btn absolute bottom-14 right-0 translate-x-[85%] hover:translate-x-[100%] duration-200 rounded-r-full bg-def_white/20 flex items-center justify-center px-1 md:px-2 py-1 cursor-pointer -z-10"
+          className="cross_btn absolute bottom-3 right-0 translate-x-[85%] hover:translate-x-[100%] duration-200 rounded-r-full bg-def_white/20 flex items-center justify-center px-1 md:px-2 py-1 cursor-pointer -z-10"
         >
           <ImEmbed2 />
         </div>
