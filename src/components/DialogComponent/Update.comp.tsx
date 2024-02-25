@@ -311,7 +311,7 @@ const UpdateProfile = ({
           placeholder="Hey What's Your Status ?"
           value={about}
           onChange={(e) => setAbout(e.target.value)}
-          className="text-xs bg-def_blue_gray_dark rounded-[7px] outline-none resize-none p-2 text-def_white/40 font-FiraMono min-h-[60px] h-[70px]"
+          className="text-xs bg-def_blue_gray_dark rounded-[7px] outline-none resize-none p-2 px-4 text-def_white/40 font-FiraMono min-h-[60px] h-[70px] no-scrollbar"
         ></textarea>
 
         {/* Talks About */}
@@ -321,16 +321,17 @@ const UpdateProfile = ({
           </div>
           <label
             htmlFor="talksAbout"
-            className="addTalksAbout w-full h-[60px] rounded-[7px] bg-def_blue_gray_dark resize-none p-2 outline-none text-xs relative flex gap-2 flex-wrap overflow-y-scroll cursor-text no-scrollbar"
+            className="addTalksAbout w-full h-[60px] rounded-[7px] bg-def_blue_gray_dark resize-none p-2 px-4 outline-none text-xs relative flex gap-2 flex-wrap overflow-y-scroll cursor-text no-scrollbar"
           >
             {talksAbout.map((ele, ind) => {
-              return <Chips size="xs" bg="bg-white" text={ele} key={ind} />;
+              return <Chips size="sm" bg="bg-white" text={ele} key={ind} />;
             })}
-            <div className="inputWrapper relative w-full">
-              <input
+            <div className="inputWrapper relative pt-1">
+              <textarea
+                rows={1}
                 id="talksAbout"
                 placeholder="click enter to add"
-                className="bg-transparent outline-none flex-1 self-start font-FiraMono capitalize"
+                className="bg-transparent outline-none flex-1 resize-none self-start font-FiraMono capitalize no-scrollbar"
                 value={talksAboutSearch}
                 onChange={(e) => {
                   setTalksAboutSearch(e.target.value);
@@ -360,7 +361,7 @@ const UpdateProfile = ({
                     setTalksAboutSearch("");
                   }
                 }}
-              ></input>
+              ></textarea>
               <div className="shadowedWord absolute top-0 left-0 font-FiraMono text-white/30 max-w-full">
                 {talksAboutSearch}
                 {talksAboutSearch &&
@@ -382,7 +383,7 @@ const UpdateProfile = ({
           </div>
           <label
             htmlFor="socialProfiles"
-            className=" w-full rounded-[7px] bg-def_blue_gray_dark resize-none p-2 outline-none text-xs relative flex gap-2 flex-wrap overflow-y-scroll cursor-text"
+            className=" w-full rounded-[7px] bg-def_blue_gray_dark resize-none p-2 px-4 outline-none text-xs relative flex gap-2 flex-wrap overflow-y-scroll cursor-text"
           >
             <div className="Profiles flex flex-wrap gap-2 text-base text-white/50 ">
               {socialProfiles &&
@@ -396,9 +397,9 @@ const UpdateProfile = ({
                   else return <FaLink />;
                 })}
             </div>
-            <input
-              type="text"
+            <textarea
               name=""
+              rows={1}
               id="socialProfiles"
               placeholder="Enter to add"
               value={socialProfilesSearch}
@@ -408,12 +409,15 @@ const UpdateProfile = ({
                   if (validator.isURL(socialProfilesSearch!)) {
                     setSocialProfiles((e) => [...e, socialProfilesSearch!]);
                     setSocialProfilesSearch("");
-                  } else alert("not a valid link");
+                  } else {
+                    e.preventDefault();
+                    alert("not a valid link");
+                  }
                 } else if (e.key == "Backspace" && socialProfilesSearch == "") {
                   setSocialProfiles((e) => e.slice(0, e.length - 1));
                 }
               }}
-              className="bg-transparent outline-none flex-1 self-start w-full font-FiraMono"
+              className="bg-transparent outline-none flex-1 self-start font-FiraMono resize-none"
             />
           </label>
         </div>
