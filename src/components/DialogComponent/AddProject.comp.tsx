@@ -25,48 +25,51 @@ const AddProject = ({
   setClose: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <motion.div
-      layout
-      className="w-full flex flex-col items-center self-center overflow-y-scroll max-h-screen py-[20vh] no-scrollbar relative"
-    >
+    <div className="flex flex-col items-center justify-center">
       <div
         onClick={(e) => {
           setClose(false);
           e.stopPropagation();
         }}
-        className="absolute top-0 bg-def_rose rounded-full my-16 cursor-pointer duration-200 text-white p-3 z-50"
+        className="absolute top-0 bg-def_rose rounded-full my-16 cursor-pointer duration-200 text-white p-3 z-[200]"
       >
         <IoClose />
       </div>
-      {projects.map((project, index) => {
-        return (
-          <>
-            <ProjectCard
-              key={index}
-              close={showProjects ? false : true}
-              index={index}
-              projects={projects}
-              setProjects={setProjects}
-              showing={showProjects}
-            />
-            {!showProjects && index < 2 && (
-              <div className="line w-3 h-5 bg-def_blue_gray_light flex-shrink-0"></div>
-            )}
-            {showProjects && index < projects.length - 1 && (
-              <div className="line w-3 h-5 bg-def_blue_gray_light flex-shrink-0"></div>
-            )}
-          </>
-        );
-      })}
-      {projects.length < 3 && !showProjects && (
-        <ProjectCard
-          close={false}
-          index={projects.length}
-          projects={projects}
-          setProjects={setProjects}
-        />
-      )}
-    </motion.div>
+      <motion.div
+        layout
+        className="w-full flex flex-col items-center self-center overflow-y-scroll max-h-screen py-[20vh] no-scrollbar relative"
+      >
+        {projects.length == 0 && <div className="">No Projects Found</div>}
+        {projects.map((project, index) => {
+          return (
+            <>
+              <ProjectCard
+                key={index}
+                close={showProjects ? false : true}
+                index={index}
+                projects={projects}
+                setProjects={setProjects}
+                showing={showProjects}
+              />
+              {!showProjects && index < 2 && (
+                <div className="line w-3 h-5 bg-def_blue_gray_light flex-shrink-0"></div>
+              )}
+              {showProjects && index < projects.length - 1 && (
+                <div className="line w-3 h-5 bg-def_blue_gray_light flex-shrink-0"></div>
+              )}
+            </>
+          );
+        })}
+        {projects.length < 3 && !showProjects && (
+          <ProjectCard
+            close={false}
+            index={projects.length}
+            projects={projects}
+            setProjects={setProjects}
+          />
+        )}
+      </motion.div>
+    </div>
   );
 };
 

@@ -43,7 +43,7 @@ const Page = ({ params }: { params: { username: string } }) => {
         {/* Loading */}
         {loading && (
           
-        <div className="text-lg font-FiraMono font-medium w-full h-full backdrop-blur-xl absolute flex items-center justify-center text-[10vw] z-30 select-none">
+        <div className=" font-FiraMono font-medium w-full h-full backdrop-blur-xl absolute flex items-center justify-center text-[10vw] z-30 select-none">
         Loading
       </div>
         )}

@@ -44,7 +44,7 @@ const Home = () => {
 
   useLayoutEffect(() => {
     const JWTLogin = async () => {
-      setLoading(true)
+      setLoading(true);
       const response = await fetch(`/api/`, {
         headers: {
           "Content-Type": "application/json",
@@ -58,8 +58,8 @@ const Home = () => {
       }
       setLoading(false);
     };
-    JWTLogin().catch((err) => console.log(err))
-  }, [setIsUser, setUser,setLoading]);
+    JWTLogin().catch((err) => console.log(err));
+  }, [setIsUser, setUser, setLoading]);
   return (
     <div className="Home relative w-screen h-screen flex items-center justify-center py-10">
       <Dialog isOpen={login} setOpen={setLogin} key={"Login"}>
@@ -77,7 +77,7 @@ const Home = () => {
       <Dialog isOpen={loading} setOpen={null} noClose>
         {/* Loading */}
         {loading && (
-          <div className="text-lg font-FiraMono font-medium w-full h-full backdrop-blur-xl absolute flex items-center justify-center text-[10vw] z-30 select-none">
+          <div className="font-FiraMono font-medium w-full h-full backdrop-blur-xl absolute flex items-center justify-center text-[10vw] z-30 select-none">
             Loading
           </div>
         )}
